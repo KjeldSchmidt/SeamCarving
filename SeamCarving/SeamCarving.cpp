@@ -15,11 +15,12 @@ int main()
 	if (!image.empty()) {
 		std::cout << "Image loaded";
 		window.showImage(image);
-		cv::waitKey(1);
 	}
 	else {
 		std::cout << "Empty image";
 	}
+
+	window.DrawLine(100);
 
 	system("pause");
 

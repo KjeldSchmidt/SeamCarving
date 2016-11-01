@@ -8,6 +8,8 @@ private:
 	std::string name;
 public:
 	void showImage( cv::Mat& );
+	void refresh();
+	void DrawLine(int col);
 	ImageDisplay(std::string name);
 	~ImageDisplay();
 };
