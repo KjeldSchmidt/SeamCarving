@@ -1,0 +1,12 @@
+﻿  stdafx.cpp
+  SeamCarving.cpp
+  ImageReader.cpp
+  Generating Code...
+ImageReader.obj : error LNK2019: unresolved external symbol "private: char * __thiscall cv::String::allocate(unsigned int)" (?allocate@String@cv@@AAEPADI@Z) referenced in function "public: __thiscall cv::String::String(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (??0String@cv@@QAE@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+ImageReader.obj : error LNK2019: unresolved external symbol "private: void __thiscall cv::String::deallocate(void)" (?deallocate@String@cv@@AAEXXZ) referenced in function "public: __thiscall cv::String::~String(void)" (??1String@cv@@QAE@XZ)
+ImageReader.obj : error LNK2019: unresolved external symbol "class cv::Mat __cdecl cv::imread(class cv::String const &,int)" (?imread@cv@@YA?AVMat@1@ABVString@1@H@Z) referenced in function "public: static class cv::Mat __cdecl ImageReader::readImage(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (?readImage@ImageReader@@SA?AVMat@cv@@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+SeamCarving.obj : error LNK2019: unresolved external symbol "void __cdecl cv::fastFree(void *)" (?fastFree@cv@@YAXPAX@Z) referenced in function "public: __thiscall cv::Mat::~Mat(void)" (??1Mat@cv@@QAE@XZ)
+SeamCarving.obj : error LNK2019: unresolved external symbol "public: void __thiscall cv::Mat::deallocate(void)" (?deallocate@Mat@cv@@QAEXXZ) referenced in function "public: void __thiscall cv::Mat::release(void)" (?release@Mat@cv@@QAEXXZ)
+D:\Programme\opencv\build\x64\vc14\lib\opencv_world310.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+D:\Programme\opencv\build\x64\vc14\lib\opencv_world310d.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+D:\Verpflichtend\Unikram\Münster\Hausaufgaben\17.11. Computer Vision\Made\SeamCarving\Debug\SeamCarving.exe : fatal error LNK1120: 5 unresolved externals
