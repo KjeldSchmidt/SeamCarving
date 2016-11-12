@@ -7,22 +7,26 @@ int main()
 {
 	std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
-	ImageDisplay window("Test Window");
+	ImageDisplay originalImage("Original Image");
+	ImageDisplay scaledImage("Sclaed Image");
 
 	cv::Mat image = ImageReader::readImage("testimage.jpg");
+	SeamDetector seamDetector( image );
 
 
 	if (!image.empty()) {
 		std::cout << "Image loaded";
-		window.showImage(image);
+		originalImage.showImage(image);
+
+		seamDetector.findSeam();
+		cv::Mat* seamedImage = seamDetector.getEnergyMatrix();
+		scaledImage.showImage( *seamedImage );
 	}
 	else {
 		std::cout << "Empty image";
 	}
 
-	window.DrawLine(100);
-
-	system("pause");
+	system( "pause" );
 
     return 0;
 }

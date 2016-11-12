@@ -160,6 +160,7 @@
     <ClInclude Include="ImageDisplay.h" />
     <ClInclude Include="ImageReader.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SeamDetector.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -167,6 +168,7 @@
     <ClCompile Include="ImageDisplay.cpp" />
     <ClCompile Include="ImageReader.cpp" />
     <ClCompile Include="SeamCarving.cpp" />
+    <ClCompile Include="SeamDetector.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
