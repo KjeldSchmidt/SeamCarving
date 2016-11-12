@@ -17,7 +17,7 @@ void ImageDisplay::showImage(cv::Mat& image)
 	cv::waitKey(1);
 }
 
-void ImageDisplay::refresh() {
+void ImageDisplay::refresh() const {
 	cv::imshow(name, openImage);
 	cv::waitKey(1);
 }

@@ -8,7 +8,7 @@ private:
 	std::string name;
 public:
 	void showImage( cv::Mat& );
-	void refresh();
+	void refresh() const;
 	ImageDisplay(std::string name);
 	~ImageDisplay();
 };
