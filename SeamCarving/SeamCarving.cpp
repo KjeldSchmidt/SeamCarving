@@ -18,7 +18,7 @@ int main()
 		std::cout << "Image loaded";
 		originalImage.showImage(image);
 
-		seamDetector.findSeam();
+		seamDetector.findVerticalSeam();
 		cv::Mat* seamedImage = seamDetector.getEnergyMatrix();
 		scaledImage.showImage( *seamedImage );
 	}

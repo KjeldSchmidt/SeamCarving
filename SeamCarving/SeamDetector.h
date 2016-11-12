@@ -14,8 +14,10 @@ private:
 public:
 	SeamDetector( int width, int height );
 	explicit  SeamDetector( cv::Mat &originalImage );
-	void findSeam();
+	void findVerticalSeam();
 	void iterateSeam(int row);
+	void traceVerticalSeam();
+	void traceHorizontalSeam();
 	void drawSeam(int col);
 	cv::Mat * getImage();
 	cv::Mat * getEnergyMatrix();
