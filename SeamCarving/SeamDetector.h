@@ -14,8 +14,9 @@ private:
 	int height;
 public:
 	explicit  SeamDetector( cv::Mat &originalImage );
+	void prepareEnergyMatrix();
 	void findVerticalSeam();
-	void iterateEnergyMatrix(int row);
+	void iterateVerticalSeamMatrix(int row);
 	void traceVerticalSeam();
 	void findVerticalSeamStartingPoint();
 	void iterateVerticalSeam(int row);

@@ -11,13 +11,14 @@ int main()
 	ImageDisplay scaledImage("Sclaed Image");
 
 	cv::Mat image = ImageReader::readImage("testimage.jpg");
-	SeamDetector seamDetector( image );
 
 
 	if (!image.empty()) {
 		std::cout << "Image loaded" << std::endl;
 		originalImage.showImage(image);
 
+		SeamDetector seamDetector( image );
+		seamDetector.renderEnergyMatrix();
 		seamDetector.findVerticalSeam();
 		seamDetector.drawVerticalSeam();
 		cv::Mat* seamedImage = seamDetector.getImage();
