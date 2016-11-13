@@ -117,10 +117,22 @@ void SeamDetector::drawVerticalSeam() {
 	}
 }
 
+void SeamDetector::removeVerticalSeam() {
+	auto p = verticalSeam.begin();
+	int rowIndex = height - 1;
+	for ( ; p != verticalSeam.end(); ++p, --rowIndex ) {
+		originalImageMatrix.at<cv::Vec3b>( CvPoint( *p, rowIndex ) ) = cv::Vec3i( 255, 0, 0 );
 
-/*
- * Horizontal seams begin here!
- */
+		for ( int colIndex = *p; colIndex < width - 1; ++colIndex ) {
+			// TODO: Change those linenes into efficent memmove calls!
+			originalImageMatrix.at<cv::Vec3b>( cvPoint( colIndex, rowIndex ) ) = originalImageMatrix.at<cv::Vec3b>( cvPoint( colIndex + 1, rowIndex ) );
+			energyMatrix.at<int>( cvPoint( colIndex, rowIndex ) ) = energyMatrix.at<int>( cvPoint( colIndex + 1, rowIndex ) );
+		}
+	}
+
+	--width;
+}
+
 
 void SeamDetector::findHorizontalSeam() {
 	seamMatrix = energyMatrix.clone();
@@ -219,6 +231,10 @@ cv::Mat* SeamDetector::getImage() {
 }
 
 cv::Mat* SeamDetector::getEnergyMatrix() {
+	return &energyMatrix;
+}
+
+cv::Mat* SeamDetector::getSeamMatrix() {
 	return &seamMatrix;
 }
 

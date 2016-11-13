@@ -25,10 +25,12 @@ public:
 	void iterateHorizontalSeam(int row);
 	void drawHorizontalSeam();
 	void drawVerticalSeam();
+	void removeVerticalSeam();
 	void findHorizontalSeam();
 	void iterateHorizontalSeamMatrix(int row);
 	cv::Mat * getImage();
 	cv::Mat * getEnergyMatrix();
+	cv::Mat* getSeamMatrix();
 	~SeamDetector();
 };
 
