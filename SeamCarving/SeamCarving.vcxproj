@@ -180,6 +180,8 @@
     <ResourceCompile Include="SeamCarving.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="bars.jpg" />
+    <Image Include="bars.png" />
     <Image Include="testImage.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

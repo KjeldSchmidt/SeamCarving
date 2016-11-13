@@ -10,7 +10,7 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
 }
 
 /*
- * Dummy function - works by stupidy, not any actual energy.
+ * Dummy function - works by stupidity, not any actual energy.
  */
 void SeamDetector::prepareEnergyMatrix() {
 	for ( int row = 0; row < height; ++row ) {
@@ -22,7 +22,12 @@ void SeamDetector::prepareEnergyMatrix() {
 	}
 }
 
+
 void SeamDetector::findVerticalSeam() {
+	for ( int i = 0; i < seamMatrix.rows; ++i ) {
+		seamMatrix.at<int>( CvPoint( 0, i ) ) = energyMatrix.at<int>( cvPoint( 0, i ) );
+	}
+
 	for ( auto i = 1; i < seamMatrix.rows; ++i ) {
 		iterateVerticalSeamMatrix( i );
 	}
@@ -66,9 +71,8 @@ void SeamDetector::traceVerticalSeam() {
 void SeamDetector::findVerticalSeamStartingPoint() {
 	int startingPoint = 0;
 	int minimumEnergy = std::numeric_limits<int>::max();
-	for ( int col = 0; col >= seamMatrix.cols; --col ) {
-		int energyAtIndex = seamMatrix.at<cv::Vec3i>( CvPoint( col, height - 1 ) )[ 0 ];
-
+	for ( int col = 0; col < seamMatrix.cols; ++col ) {
+		int energyAtIndex = seamMatrix.at<int>( CvPoint( col, height - 1 ) );
 		if ( energyAtIndex < minimumEnergy ) {
 			startingPoint = col;
 			minimumEnergy = energyAtIndex;
@@ -106,16 +110,111 @@ void SeamDetector::iterateVerticalSeam( int row ) {
 	verticalSeam.push_back( previousIndex + indexShift );
 }
 
-void SeamDetector::traceHorizontalSeam() {
-
-}
-
-
 void SeamDetector::drawVerticalSeam() {
 	auto p = verticalSeam.begin();
 	int rowIndex = height - 1;
 	for ( ; p != verticalSeam.end(); ++p, --rowIndex ) {
 		originalImageMatrix.at<cv::Vec3b>( CvPoint( *p, rowIndex ) ) = cv::Vec3i( 255, 0, 0 );
+	}
+}
+
+
+/*
+ * Horizontal seams begin here!
+ */
+
+void SeamDetector::findHorizontalSeam() {
+
+	for ( int i = 0; i < seamMatrix.cols; ++i ) {
+		seamMatrix.at<int>( CvPoint( i, 0 ) ) = energyMatrix.at<int>( cvPoint( i, 0 ) );
+	}
+
+	for ( int i = 1; i < seamMatrix.rows; ++i ) {
+		iterateHorizontalSeamMatrix( i );
+	}
+
+	traceHorizontalSeam();
+}
+
+
+void SeamDetector::iterateHorizontalSeamMatrix( int col ) {
+	for ( auto row = 0; row < energyMatrix.rows; ++row ) {
+		int lowestNeighbourLeft = 0;
+		int top = std::numeric_limits<int>::max();
+		int bottom = std::numeric_limits<int>::max();
+		int left = energyMatrix.at<int>( CvPoint( col - 1, row ) );
+		if ( row > 0 ) {
+			top = energyMatrix.at<int>( CvPoint( col - 1, row - 1 ) );
+		}
+		if ( row < energyMatrix.rows - 1 ) {
+			bottom = energyMatrix.at<int>( CvPoint( col - 1, row + 1 ) );
+		}
+
+		lowestNeighbourLeft = ( top < left ) ? top : left;
+		lowestNeighbourLeft = ( bottom < lowestNeighbourLeft ) ? bottom : lowestNeighbourLeft;
+
+		seamMatrix.at<int>( CvPoint( col, row ) ) += lowestNeighbourLeft;
+	}
+}
+
+
+void SeamDetector::traceHorizontalSeam() {
+
+	horizontalSeam.clear();
+	findHorizontalSeamStartingPoint();
+
+
+	for ( int col = seamMatrix.cols - 2; col > 0; --col ) {
+		iterateHorizontalSeam( col );
+	}
+}
+
+void SeamDetector::findHorizontalSeamStartingPoint() {
+	int startingPoint = 0;
+	int minimumEnergy = std::numeric_limits<int>::max();
+	for ( int row = 0; row < seamMatrix.rows; ++row ) {
+		int energyAtIndex = seamMatrix.at<int>( CvPoint( width - 1, row ) );
+		if ( energyAtIndex < minimumEnergy ) {
+			startingPoint = row;
+			minimumEnergy = energyAtIndex;
+		}
+	}
+
+	horizontalSeam.push_back( startingPoint );
+}
+
+void SeamDetector::iterateHorizontalSeam( int col ) {
+	int previousIndex = horizontalSeam.back();    // The index of the last point of the seam. Only check top left, top top and top right from here.
+	char indexShift = 0;                          // Will indicate where to move next. Should only ever be -1, 0 or 1.
+
+	int topEnergy;
+	int bottomEnergy;
+	int leftEnergy = seamMatrix.at<int>( CvPoint( col - 1, previousIndex ) );
+	int lowestEnergyLeft = leftEnergy;
+
+	if ( previousIndex > 0 ) {
+		topEnergy = seamMatrix.at<int>( CvPoint( col - 1, previousIndex - 1 ) );
+		if ( topEnergy < lowestEnergyLeft ) {
+			lowestEnergyLeft = topEnergy;
+			indexShift = -1;
+		}
+	}
+
+	if ( previousIndex < height - 1 ) {
+		bottomEnergy = seamMatrix.at<int>( CvPoint( col - 1, previousIndex + 1 ) );
+		if ( bottomEnergy < lowestEnergyLeft ) {
+			indexShift = 1;
+		}
+	}
+
+	horizontalSeam.push_back( previousIndex + indexShift );
+}
+
+void SeamDetector::drawHorizontalSeam() {
+	auto p = horizontalSeam.begin();
+	int colIndex = width - 1;
+	for ( ; p != horizontalSeam.end(); ++p, --colIndex ) {
+		originalImageMatrix.at<cv::Vec3b>( CvPoint( colIndex, *p ) ) = cv::Vec3i( 255, 0, 0 );
 	}
 }
 

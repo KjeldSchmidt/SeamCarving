@@ -21,7 +21,12 @@ public:
 	void findVerticalSeamStartingPoint();
 	void iterateVerticalSeam(int row);
 	void traceHorizontalSeam();
+	void findHorizontalSeamStartingPoint();
+	void iterateHorizontalSeam(int row);
+	void drawHorizontalSeam();
 	void drawVerticalSeam();
+	void findHorizontalSeam();
+	void iterateHorizontalSeamMatrix(int row);
 	cv::Mat * getImage();
 	cv::Mat * getEnergyMatrix();
 	~SeamDetector();

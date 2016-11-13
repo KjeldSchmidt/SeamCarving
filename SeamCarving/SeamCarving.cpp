@@ -8,9 +8,9 @@ int main()
 	std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
 	ImageDisplay originalImage("Original Image");
-	ImageDisplay scaledImage("Sclaed Image");
+	ImageDisplay scaledImage("Scaled Image");
 
-	cv::Mat image = ImageReader::readImage("testimage.jpg");
+	cv::Mat image = ImageReader::readImage("testImage.jpg");
 
 
 	if (!image.empty()) {
@@ -21,6 +21,8 @@ int main()
 		seamDetector.prepareEnergyMatrix();
 		seamDetector.findVerticalSeam();
 		seamDetector.drawVerticalSeam();
+		seamDetector.findHorizontalSeam();
+		seamDetector.drawHorizontalSeam();
 		cv::Mat* seamedImage = seamDetector.getImage();
 		scaledImage.showImage( *seamedImage );
 	}
