@@ -20,12 +20,13 @@ void SeamDetector::prepareEnergyMatrix() {
 			energyMatrix.at<int>( CvPoint( col, row ) ) = sumColor;
 		}
 	}
-
-	seamMatrix = energyMatrix.clone();
 }
 
 
 void SeamDetector::findVerticalSeam() {
+
+	seamMatrix = energyMatrix.clone();
+
 	for ( auto i = 1; i < seamMatrix.rows; ++i ) {
 		iterateVerticalSeamMatrix( i );
 	}
@@ -122,7 +123,9 @@ void SeamDetector::drawVerticalSeam() {
  */
 
 void SeamDetector::findHorizontalSeam() {
-	for ( int i = 1; i < seamMatrix.rows; ++i ) {
+	seamMatrix = energyMatrix.clone();
+
+	for ( int i = 1; i < seamMatrix.cols; ++i ) {
 		iterateHorizontalSeamMatrix( i );
 	}
 
