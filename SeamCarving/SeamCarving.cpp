@@ -18,7 +18,7 @@ int main()
 		originalImage.showImage(image);
 
 		SeamDetector seamDetector( image );
-		seamDetector.renderEnergyMatrix();
+		seamDetector.prepareEnergyMatrix();
 		seamDetector.findVerticalSeam();
 		seamDetector.drawVerticalSeam();
 		cv::Mat* seamedImage = seamDetector.getImage();

@@ -8,6 +8,18 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
 	energyMatrix = *new cv::Mat( height, width, CV_32SC1 );
 	seamMatrix = *new cv::Mat( height, width, CV_32SC1 );
 }
+
+/*
+ * Dummy function - works by stupidy, not any actual energy.
+ */
+void SeamDetector::prepareEnergyMatrix() {
+	for ( int row = 0; row < height; ++row ) {
+		for ( int col = 0; col < width; ++col ) {
+			auto color = originalImageMatrix.at<cv::Vec3b>( CvPoint( col, row ) );
+			int sumColor = color[ 0 ] + color[ 1 ] + color[ 2 ];
+			energyMatrix.at<int>( CvPoint( col, row ) ) = sumColor;
+		}
+	}
 }
 
 void SeamDetector::findVerticalSeam() {
@@ -71,8 +83,8 @@ void SeamDetector::iterateVerticalSeam( int row ) {
 	int previousIndex = verticalSeam.back();    // The index of the last point of the seam. Only check top left, top top and top right from here.
 	char indexShift = 0;                        // Will indicate where to move next. Should only ever be -1, 0 or 1.
 
-	int leftEnergy = std::numeric_limits<int>::max();
-	int rightEnergy = std::numeric_limits<int>::max();
+	int leftEnergy;
+	int rightEnergy;
 	int topEnergy = seamMatrix.at<int>( CvPoint( previousIndex, row - 1 ) );
 	int lowestEnergyAbove = topEnergy;
 
