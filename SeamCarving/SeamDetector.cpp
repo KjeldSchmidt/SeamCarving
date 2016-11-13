@@ -20,14 +20,12 @@ void SeamDetector::prepareEnergyMatrix() {
 			energyMatrix.at<int>( CvPoint( col, row ) ) = sumColor;
 		}
 	}
+
+	seamMatrix = energyMatrix.clone();
 }
 
 
 void SeamDetector::findVerticalSeam() {
-	for ( int i = 0; i < seamMatrix.rows; ++i ) {
-		seamMatrix.at<int>( CvPoint( 0, i ) ) = energyMatrix.at<int>( cvPoint( 0, i ) );
-	}
-
 	for ( auto i = 1; i < seamMatrix.rows; ++i ) {
 		iterateVerticalSeamMatrix( i );
 	}
@@ -37,16 +35,16 @@ void SeamDetector::findVerticalSeam() {
 
 
 void SeamDetector::iterateVerticalSeamMatrix( int row ) {
-	for ( auto col = 0; col < energyMatrix.cols; ++col ) {
+	for ( auto col = 0; col < width; ++col ) {
 		int lowestNeighbourAbove = 0;
 		int left = std::numeric_limits<int>::max();
 		int right = std::numeric_limits<int>::max();
-		int top = energyMatrix.at<int>( CvPoint( col, row - 1 ) );
+		int top = seamMatrix.at<int>( CvPoint( col, row - 1 ) );
 		if ( col > 0 ) {
-			left = energyMatrix.at<int>( CvPoint( col - 1, row - 1 ) );
+			left = seamMatrix.at<int>( CvPoint( col - 1, row - 1 ) );
 		}
-		if ( col < energyMatrix.cols - 1 ) {
-			right = energyMatrix.at<int>( CvPoint( col + 1, row - 1 ) );
+		if ( col < width - 1 ) {
+			right = seamMatrix.at<int>( CvPoint( col + 1, row - 1 ) );
 		}
 
 		lowestNeighbourAbove = ( left < top ) ? left : top;
@@ -124,11 +122,6 @@ void SeamDetector::drawVerticalSeam() {
  */
 
 void SeamDetector::findHorizontalSeam() {
-
-	for ( int i = 0; i < seamMatrix.cols; ++i ) {
-		seamMatrix.at<int>( CvPoint( i, 0 ) ) = energyMatrix.at<int>( cvPoint( i, 0 ) );
-	}
-
 	for ( int i = 1; i < seamMatrix.rows; ++i ) {
 		iterateHorizontalSeamMatrix( i );
 	}
@@ -138,16 +131,16 @@ void SeamDetector::findHorizontalSeam() {
 
 
 void SeamDetector::iterateHorizontalSeamMatrix( int col ) {
-	for ( auto row = 0; row < energyMatrix.rows; ++row ) {
+	for ( auto row = 0; row < height; ++row ) {
 		int lowestNeighbourLeft = 0;
 		int top = std::numeric_limits<int>::max();
 		int bottom = std::numeric_limits<int>::max();
-		int left = energyMatrix.at<int>( CvPoint( col - 1, row ) );
+		int left = seamMatrix.at<int>( CvPoint( col - 1, row ) );
 		if ( row > 0 ) {
-			top = energyMatrix.at<int>( CvPoint( col - 1, row - 1 ) );
+			top = seamMatrix.at<int>( CvPoint( col - 1, row - 1 ) );
 		}
-		if ( row < energyMatrix.rows - 1 ) {
-			bottom = energyMatrix.at<int>( CvPoint( col - 1, row + 1 ) );
+		if ( row < height - 1 ) {
+			bottom = seamMatrix.at<int>( CvPoint( col - 1, row + 1 ) );
 		}
 
 		lowestNeighbourLeft = ( top < left ) ? top : left;

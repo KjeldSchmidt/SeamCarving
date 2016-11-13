@@ -10,7 +10,7 @@ int main()
 	ImageDisplay originalImage("Original Image");
 	ImageDisplay scaledImage("Scaled Image");
 
-	cv::Mat image = ImageReader::readImage("testImage.jpg");
+	cv::Mat image = ImageReader::readImage("bars.jpg");
 
 
 	if (!image.empty()) {
