@@ -24,6 +24,7 @@ public:
 	void findHorizontalSeamStartingPoint();
 	void iterateHorizontalSeam(int row);
 	void drawHorizontalSeam();
+	void removeHorizontalSeam();
 	void drawVerticalSeam();
 	void removeVerticalSeam();
 	void findHorizontalSeam();

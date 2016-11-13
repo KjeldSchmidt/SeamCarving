@@ -3,38 +3,37 @@
 
 #include "stdafx.h"
 
-int main()
-{
+int main() {
 	std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
-	ImageDisplay originalImage("Original Image");
-	ImageDisplay scaledImage("Scaled Image");
+	ImageDisplay originalImage( "Original Image" );
+	ImageDisplay scaledImage( "Scaled Image" );
 
-	cv::Mat image = ImageReader::readImage("testimage.jpg");
+	cv::Mat image = ImageReader::readImage( "bars.jpg" );
 
 
-	if (!image.empty()) {
+	if ( !image.empty() ) {
 		std::cout << "Image loaded" << std::endl;
-		
+
 		originalImage.showImage( image );
 
 		SeamDetector seamDetector( image );
 		seamDetector.prepareEnergyMatrix();
-		
-		for ( int i = 0; i < 100; ++i )
-		{
-			seamDetector.findVerticalSeam();
-			seamDetector.removeVerticalSeam();
-		}		
-		
+
+		for ( int i = 0; i < 100; ++i ) {
+			seamDetector.findHorizontalSeam();
+			seamDetector.drawHorizontalSeam();
+			scaledImage.showImage( *seamDetector.getImage() );
+			seamDetector.removeHorizontalSeam();
+		}
+
 		cv::Mat* scaled = seamDetector.getImage();
 		scaledImage.showImage( *scaled );
-	}
-	else {
+	} else {
 		std::cout << "Empty image" << std::endl;
 	}
 
 	system( "pause" );
 
-    return 0;
+	return 0;
 }
