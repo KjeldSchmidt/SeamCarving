@@ -15,15 +15,16 @@ int main()
 
 
 	if (!image.empty()) {
-		std::cout << "Image loaded";
+		std::cout << "Image loaded" << std::endl;
 		originalImage.showImage(image);
 
 		seamDetector.findVerticalSeam();
-		cv::Mat* seamedImage = seamDetector.getEnergyMatrix();
+		seamDetector.drawVerticalSeam();
+		cv::Mat* seamedImage = seamDetector.getImage();
 		scaledImage.showImage( *seamedImage );
 	}
 	else {
-		std::cout << "Empty image";
+		std::cout << "Empty image" << std::endl;
 	}
 
 	system( "pause" );

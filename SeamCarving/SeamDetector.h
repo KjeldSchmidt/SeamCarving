@@ -5,6 +5,7 @@
 class SeamDetector
 {
 private:
+	cv::Mat originalImageMatrix;
 	cv::Mat energyMatrix;
 	cv::Mat seamMatrix;
 	std::vector<int> verticalSeam;
@@ -12,13 +13,14 @@ private:
 	int width;
 	int height;
 public:
-	SeamDetector( int width, int height );
 	explicit  SeamDetector( cv::Mat &originalImage );
 	void findVerticalSeam();
-	void iterateSeam(int row);
+	void iterateEnergyMatrix(int row);
 	void traceVerticalSeam();
+	void findVerticalSeamStartingPoint();
+	void iterateVerticalSeam(int row);
 	void traceHorizontalSeam();
-	void drawSeam(int col);
+	void drawVerticalSeam();
 	cv::Mat * getImage();
 	cv::Mat * getEnergyMatrix();
 	~SeamDetector();

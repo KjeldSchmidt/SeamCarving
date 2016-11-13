@@ -7,6 +7,7 @@
 
 #include "targetver.h"
 #include "iostream"
+#include "limits"
 
 #include <stdio.h>
 #include <tchar.h>
