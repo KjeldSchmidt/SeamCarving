@@ -12,21 +12,23 @@ private:
 	std::vector<int> horizontalSeam;
 	int width;
 	int height;
-	bool currentlyTransposed;
+	bool currentlyTransposed = false;
+	bool energyMatrixIsSet = false;
 
-	void iterateVerticalSeamMatrix( int row );
-	void traceVerticalSeam();
-	void findVerticalSeamStartingPoint();
-	void iterateVerticalSeam( int row );
+	void prepareEnergyMatrix();
 
-	void iterateHorizontalSeamMatrix( int row );
-	void traceHorizontalSeam();
-	void findHorizontalSeamStartingPoint();
-	void iterateHorizontalSeam( int row );
+	void findSeam();
+	void drawSeam();
+	void removeSeam();
+	void iterateSeamMatrix( int row );
+	void traceSeam();
+	void findSeamStartingPoint();
+	void iterateSeam( int row );
+
+	void transpose();
 
 public:
 	explicit  SeamDetector( cv::Mat &originalImage );
-	void prepareEnergyMatrix();
 	
 	void findVerticalSeam();
 	void drawVerticalSeam();
@@ -35,15 +37,13 @@ public:
 	void findHorizontalSeam();
 	void drawHorizontalSeam();
 	void removeHorizontalSeam();
-	
+
+	void setCorrectOrientation();
 	cv::Mat * getImage();
 	cv::Mat * getEnergyMatrix();
 	cv::Mat* getSeamMatrix();
 	int getHeight() const;
 	int getWidth() const;
 
-	void transpose();
-
 	~SeamDetector();
 };
-

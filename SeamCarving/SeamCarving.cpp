@@ -18,8 +18,6 @@ int main() {
 		originalImage.showImage( image );
 
 		SeamDetector seamDetector( image );
-		seamDetector.prepareEnergyMatrix();
-
 
 		int oldHeight = seamDetector.getHeight();
 		int oldWidth = seamDetector.getWidth();
@@ -42,8 +40,8 @@ int main() {
 		}
 
 
-		cv::Mat* scaled = seamDetector.getImage();
-		scaledImage.showImage( *scaled );
+		seamDetector.setCorrectOrientation();
+		scaledImage.showImage( *seamDetector.getImage() );
 	} else {
 		std::cout << "Empty image" << std::endl;
 	}
