@@ -18,5 +18,8 @@
 #include "ImageDisplay.h"
 #include "SeamDetector.h"
 
+const int MAX_INT = std::numeric_limits<int>::max();
+const int MIN_INT = std::numeric_limits<int>::min();
+
 
 // TODO: reference additional headers your program requires here
