@@ -1,6 +1,3 @@
-// SeamCarving.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
 
 int askUserForNewHeight( int oldHeight ) {
@@ -8,14 +5,13 @@ int askUserForNewHeight( int oldHeight ) {
 	while ( newHeight < 1 || newHeight > oldHeight ) {
 		std::cout << "Enter new height between 1 and " << oldHeight << " (inclusive)" << std::endl;
 		scanf_s( "%i", &newHeight );
-		std::cout << newHeight;
 
-		if (  newHeight < 1 || newHeight > oldHeight ) {
+		if ( newHeight < 1 || newHeight > oldHeight ) {
 			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
 		}
 		while ( getchar() != '\n' );
 	}
-	
+
 	return newHeight;
 }
 
@@ -24,7 +20,6 @@ int askUserForNewWidth( int oldWidth ) {
 	while ( newWidth < 1 || newWidth > oldWidth ) {
 		std::cout << "Enter new width between 1 and " << oldWidth << " (inclusive)" << std::endl;
 		scanf_s( "%i", &newWidth );
-		std::cout << newWidth;
 
 		if ( newWidth < 1 || newWidth > oldWidth ) {
 			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
@@ -41,7 +36,7 @@ int main() {
 	ImageDisplay originalImage( "Original Image" );
 	ImageDisplay scaledImage( "Scaled Image" );
 
-	cv::Mat image = ImageReader::readImage( "bars.jpg" );
+	cv::Mat image = ImageReader::readImage( "testimage.jpg" );
 
 
 	if ( !image.empty() ) {
@@ -55,24 +50,23 @@ int main() {
 
 		int oldHeight = seamDetector.getHeight();
 		int oldWidth = seamDetector.getWidth();
-		int newHeight = askUserForNewHeight( oldHeight );
-		int newWidth = askUserForNewWidth( oldWidth );
+		int rowsToRemoveCount = oldHeight - askUserForNewHeight( oldHeight );
+		int colsToRemoveCount = oldWidth - askUserForNewWidth( oldWidth );
 
 
-		for ( int i = oldHeight; i > newHeight; --i ) {
-			seamDetector.findHorizontalSeam();
-			seamDetector.drawHorizontalSeam();
-			scaledImage.showImage( *seamDetector.getImage() );
-			seamDetector.removeHorizontalSeam();
-		}
-
-		for ( int i = oldWidth; i > newWidth; --i ) {
+		for ( int i = 0; i < colsToRemoveCount; ++i ) {
 			seamDetector.findVerticalSeam();
 			seamDetector.drawVerticalSeam();
 			scaledImage.showImage( *seamDetector.getImage() );
 			seamDetector.removeVerticalSeam();
 		}
 
+		for ( int i = 0; i < rowsToRemoveCount; ++i ) {
+			seamDetector.findHorizontalSeam();
+			seamDetector.drawHorizontalSeam();
+			scaledImage.showImage( *seamDetector.getImage() );
+			seamDetector.removeHorizontalSeam();
+		}
 
 
 		cv::Mat* scaled = seamDetector.getImage();
