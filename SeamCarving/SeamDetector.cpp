@@ -28,15 +28,12 @@ void SeamDetector::findVerticalSeam() {
 	seamMatrix = energyMatrix.clone();
 	verticalSeam.clear();
 
-	std::cout << "Vector size is " << verticalSeam.size() << std::endl;
-
-	for ( auto i = 1; i < seamMatrix.rows; ++i ) {
+	for ( auto i = 1; i < height; ++i ) {
 		iterateVerticalSeamMatrix( i );
 	}
 
 	traceVerticalSeam();
 }
-
 
 void SeamDetector::iterateVerticalSeamMatrix( int row ) {
 	for ( auto col = 0; col < width; ++col ) {
@@ -62,7 +59,7 @@ void SeamDetector::traceVerticalSeam() {
 	findVerticalSeamStartingPoint();
 
 
-	for ( int row = seamMatrix.rows - 2; row > 0; --row ) {
+	for ( int row = height - 2; row > 0; --row ) {
 		iterateVerticalSeam( row );
 	}
 }
@@ -127,7 +124,7 @@ void SeamDetector::removeVerticalSeam() {
 			energyMatrix.at<int>( CvPoint( colIndex, rowIndex ) ) = energyMatrix.at<int>( CvPoint( colIndex + 1, rowIndex ) );
 		}
 
-		originalImageMatrix.at<cv::Vec3b>( CvPoint( width - 1, rowIndex ) ) = cv::Vec3i( 0, 0, 0 );
+		originalImageMatrix.at<cv::Vec3b>( CvPoint( width - 1, rowIndex ) ) = cv::Vec3b( 0, 0, 0 );
 		energyMatrix.at<int>( CvPoint( width - 1, rowIndex ) ) = std::numeric_limits<int>::max();
 		--rowIndex;
 	}
@@ -140,7 +137,7 @@ void SeamDetector::findHorizontalSeam() {
 	seamMatrix = energyMatrix.clone();
 	horizontalSeam.clear();
 
-	for ( int i = 1; i < seamMatrix.cols; ++i ) {
+	for ( int i = 1; i < width; ++i ) {
 		iterateHorizontalSeamMatrix( i );
 	}
 
@@ -171,7 +168,7 @@ void SeamDetector::traceHorizontalSeam() {
 	findHorizontalSeamStartingPoint();
 
 
-	for ( int col = seamMatrix.cols - 2; col > 0; --col ) {
+	for ( int col = width - 2; col > 0; --col ) {
 		iterateHorizontalSeam( col );
 	}
 }
@@ -235,7 +232,7 @@ void SeamDetector::removeHorizontalSeam() {
 			energyMatrix.at<int>( CvPoint( colIndex, rowIndex ) ) = energyMatrix.at<int>( CvPoint( colIndex, rowIndex + 1 ) );
 		}
 
-		originalImageMatrix.at<cv::Vec3b>( CvPoint( colIndex, height - 1 ) ) = cv::Vec3i( 0, 0, 0 );
+		originalImageMatrix.at<cv::Vec3b>( CvPoint( colIndex, height - 1 ) ) = cv::Vec3b( 0, 0, 0 );
 		energyMatrix.at<int>( CvPoint( colIndex, height - 1 ) ) = std::numeric_limits<int>::max();
 		--colIndex;
 	}
