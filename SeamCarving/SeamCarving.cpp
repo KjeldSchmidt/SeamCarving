@@ -1,34 +1,7 @@
 #include "stdafx.h"
 
-int askUserForNewHeight( int oldHeight ) {
-	int newHeight = 0;
-	while ( newHeight < 1 || newHeight > oldHeight ) {
-		std::cout << "Enter new height between 1 and " << oldHeight << " (inclusive)" << std::endl;
-		scanf_s( "%i", &newHeight );
-
-		if ( newHeight < 1 || newHeight > oldHeight ) {
-			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
-		}
-		while ( getchar() != '\n' );
-	}
-
-	return newHeight;
-}
-
-int askUserForNewWidth( int oldWidth ) {
-	int newWidth = 0;
-	while ( newWidth < 1 || newWidth > oldWidth ) {
-		std::cout << "Enter new width between 1 and " << oldWidth << " (inclusive)" << std::endl;
-		scanf_s( "%i", &newWidth );
-
-		if ( newWidth < 1 || newWidth > oldWidth ) {
-			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
-		}
-		while ( getchar() != '\n' );
-	}
-
-	return newWidth;
-}
+int askUserForNewHeight( int oldHeight );
+int askUserForNewWidth( int oldWidth );
 
 int main() {
 	std::cout << "OpenCV version : " << CV_VERSION << std::endl;
@@ -78,4 +51,34 @@ int main() {
 	system( "pause" );
 
 	return 0;
+}
+
+int askUserForNewHeight( int oldHeight ) {
+	int newHeight = 0;
+	while ( newHeight < 1 || newHeight > oldHeight ) {
+		std::cout << "Enter new height between 1 and " << oldHeight << " (inclusive)" << std::endl;
+		scanf_s( "%i", &newHeight );
+
+		if ( newHeight < 1 || newHeight > oldHeight ) {
+			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
+		}
+		while ( getchar() != '\n' );
+	}
+
+	return newHeight;
+}
+
+int askUserForNewWidth( int oldWidth ) {
+	int newWidth = 0;
+	while ( newWidth < 1 || newWidth > oldWidth ) {
+		std::cout << "Enter new width between 1 and " << oldWidth << " (inclusive)" << std::endl;
+		scanf_s( "%i", &newWidth );
+
+		if ( newWidth < 1 || newWidth > oldWidth ) {
+			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
+		}
+		while ( getchar() != '\n' );
+	}
+
+	return newWidth;
 }

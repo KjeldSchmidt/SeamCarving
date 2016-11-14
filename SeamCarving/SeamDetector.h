@@ -12,6 +12,7 @@ private:
 	std::vector<int> horizontalSeam;
 	int width;
 	int height;
+	bool currentlyTransposed;
 
 	void iterateVerticalSeamMatrix( int row );
 	void traceVerticalSeam();
@@ -40,6 +41,9 @@ public:
 	cv::Mat* getSeamMatrix();
 	int getHeight() const;
 	int getWidth() const;
+
+	void transpose();
+
 	~SeamDetector();
 };
 

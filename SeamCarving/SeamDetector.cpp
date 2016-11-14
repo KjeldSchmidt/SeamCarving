@@ -53,7 +53,7 @@ void SeamDetector::iterateVerticalSeamMatrix( int row ) {
 		lowestNeighbourAbove = ( left < top ) ? left : top;
 		lowestNeighbourAbove = ( right < lowestNeighbourAbove ) ? right : lowestNeighbourAbove;
 
-		seamMatrix.ptr<int>( row )[col] += lowestNeighbourAbove;
+		seamMatrix.ptr<int>( row )[ col ] += lowestNeighbourAbove;
 	}
 }
 
@@ -121,7 +121,7 @@ void SeamDetector::removeVerticalSeam() {
 	for ( auto p = verticalSeam.begin(); p != verticalSeam.end(); ++p ) {
 		auto *imagePointer = originalImageMatrix.ptr<cv::Vec3b>( rowIndex );
 		int *energyPointer = energyMatrix.ptr<int>( rowIndex );
-		
+
 		for ( int colIndex = *p; colIndex < width - 1; ++colIndex ) {
 			imagePointer[ colIndex ] = imagePointer[ colIndex + 1 ];
 			energyPointer[ colIndex ] = energyPointer[ colIndex + 1 ];
@@ -241,6 +241,18 @@ void SeamDetector::removeHorizontalSeam() {
 	}
 
 	--height;
+}
+
+void SeamDetector::transpose() {
+	energyMatrix = energyMatrix.t();
+	originalImageMatrix = originalImageMatrix.t();
+	seamMatrix = seamMatrix.t();
+
+	int temp = width;
+	width = height;
+	height = temp;
+
+	currentlyTransposed = !currentlyTransposed;
 }
 
 cv::Mat* SeamDetector::getImage() {
