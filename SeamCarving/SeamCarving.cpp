@@ -6,16 +6,15 @@ int askUserForNewWidth( int oldWidth );
 int main() {
 	std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
-	ImageDisplay originalImage( "Original Image" );
+	ImageDisplay EnergyImage( "Energy Map" );
 	ImageDisplay scaledImage( "Scaled Image" );
 
-	cv::Mat image = ImageReader::readImage( "testimage.jpg" );
+	cv::Mat image = ImageReader::readImage( "bars.jpg" );
 
 
 	if ( !image.empty() ) {
 		std::cout << "Image loaded" << std::endl;
 
-		originalImage.showImage( image );
 
 		SeamDetector seamDetector( image );
 
@@ -29,6 +28,7 @@ int main() {
 			seamDetector.findVerticalSeam();
 			seamDetector.drawVerticalSeam();
 			scaledImage.showImage( *seamDetector.getImage() );
+			EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
 			seamDetector.removeVerticalSeam();
 		}
 
@@ -36,6 +36,7 @@ int main() {
 			seamDetector.findHorizontalSeam();
 			seamDetector.drawHorizontalSeam();
 			scaledImage.showImage( *seamDetector.getImage() );
+			EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
 			seamDetector.removeHorizontalSeam();
 		}
 

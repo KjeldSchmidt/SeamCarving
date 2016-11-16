@@ -16,7 +16,7 @@ private:
 	bool energyMatrixIsSet = false;
 
 	void prepareEnergyMatrix();
-
+	void prepareSeamMatrix();
 	void findSeam();
 	void drawSeam();
 	void removeSeam();

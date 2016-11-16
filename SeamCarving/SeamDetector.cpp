@@ -1,11 +1,12 @@
 #include "stdafx.h"
+#include "EnergyFunctions.h"
 
 SeamDetector::SeamDetector( cv::Mat &originalImage ) {
 	originalImageMatrix = *new cv::Mat( originalImage );
 	width = originalImageMatrix.cols;
 	height = originalImageMatrix.rows;
 
-	energyMatrix = *new cv::Mat( height, width, CV_32SC1 );
+	energyMatrix = *new cv::Mat( height, width, CV_8SC1 );
 	seamMatrix = *new cv::Mat( height, width, CV_32SC1 );
 }
 
@@ -14,18 +15,25 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
  * TODO: IMPLEMENT ACTUAL ENERGY FUNCTION
  */
 void SeamDetector::prepareEnergyMatrix() {
-	for ( int row = 0; row < height; ++row ) {
-		for ( int col = 0; col < width; ++col ) {
-			auto color = originalImageMatrix.at<cv::Vec3b>( CvPoint( col, row ) );
-			int sumColor = color[ 0 ] + color[ 1 ] + color[ 2 ];
-			energyMatrix.at<int>( CvPoint( col, row ) ) = sumColor;
-		}
-	}
 
+	energyMatrix = EnergyFunctions::DirectionIndependentSorbel( originalImageMatrix );
 	energyMatrixIsSet = true;
 }
 
+void SeamDetector::prepareSeamMatrix()
+{
+	char *energyRow;
+	int *seamRow;
 
+	for ( int row = 0; row < height; ++row )
+	{
+		energyRow = energyMatrix.ptr<char>( row );
+		seamRow = seamMatrix.ptr<int>( row );
+		for ( int col = 0; col < width; ++col ) {
+			seamRow[ col ] = energyRow[ col ];
+		}
+	}
+}
 
 void SeamDetector::findSeam()
 {
@@ -35,8 +43,9 @@ void SeamDetector::findSeam()
 		prepareEnergyMatrix();
 	}
 
-	seamMatrix = energyMatrix.clone();
 	verticalSeam.clear();
+
+	prepareSeamMatrix();
 
 	for ( auto i = 1; i < height; ++i ) {
 		iterateSeamMatrix( i );
@@ -130,6 +139,9 @@ void SeamDetector::drawSeam()
 void SeamDetector::removeSeam()
 {
 	int rowIndex = height - 1;
+
+	std::cout << "Height: " << height << " image.rows" << originalImageMatrix.rows << " vector length: " << verticalSeam.size() << std::endl;
+
 	for ( auto p = verticalSeam.begin(); p != verticalSeam.end(); ++p ) {
 		auto *imagePointer = originalImageMatrix.ptr<cv::Vec3b>( rowIndex );
 		int *energyPointer = energyMatrix.ptr<int>( rowIndex );
@@ -139,8 +151,9 @@ void SeamDetector::removeSeam()
 			energyPointer[ colIndex ] = energyPointer[ colIndex + 1 ];
 		}
 
-		originalImageMatrix.at<cv::Vec3b>( CvPoint( width - 1, rowIndex ) ) = cv::Vec3b( 0, 0, 0 );
-		energyMatrix.at<int>( CvPoint( width - 1, rowIndex ) ) = MAX_INT;
+		imagePointer[ width ] = cv::Vec3b( 0, 0, 0 );
+		energyPointer[ width ] = MAX_INT;
+
 		--rowIndex;
 	}
 

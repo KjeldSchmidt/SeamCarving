@@ -1,8 +1,5 @@
-﻿  stdafx.cpp
-  SeamDetector.cpp
+﻿  SeamDetector.cpp
   SeamCarving.cpp
-  ImageReader.cpp
-  ImageDisplay.cpp
   Generating Code...
   SeamCarving.vcxproj -> D:\Verpflichtend\Unikram\Münster\Hausaufgaben\17.11. Computer Vision\Made\SeamCarving\x64\Debug\SeamCarving.exe
   SeamCarving.vcxproj -> D:\Verpflichtend\Unikram\Münster\Hausaufgaben\17.11. Computer Vision\Made\SeamCarving\x64\Debug\SeamCarving.pdb (Full PDB)
