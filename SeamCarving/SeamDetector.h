@@ -15,7 +15,6 @@ private:
 	bool currentlyTransposed = false;
 	bool energyMatrixIsSet = false;
 
-	void prepareEnergyMatrix();
 	void prepareSeamMatrix();
 	void findSeam();
 	void drawSeam();
@@ -30,6 +29,7 @@ private:
 public:
 	explicit  SeamDetector( cv::Mat &originalImage );
 	
+	void prepareEnergyMatrix();
 	void findVerticalSeam();
 	void drawVerticalSeam();
 	void removeVerticalSeam();

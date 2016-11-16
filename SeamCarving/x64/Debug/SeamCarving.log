@@ -1,3 +1,5 @@
 ﻿  EnergyFunctions.cpp
+d:\verpflichtend\unikram\münster\hausaufgaben\17.11. computer vision\made\seamcarving\seamcarving\energyfunctions.cpp(126): warning C4309: '=': truncation of constant value
+d:\verpflichtend\unikram\münster\hausaufgaben\17.11. computer vision\made\seamcarving\seamcarving\energyfunctions.cpp(175): warning C4244: '=': conversion from 'double' to 'uchar', possible loss of data
   SeamCarving.vcxproj -> D:\Verpflichtend\Unikram\Münster\Hausaufgaben\17.11. Computer Vision\Made\SeamCarving\x64\Debug\SeamCarving.exe
   SeamCarving.vcxproj -> D:\Verpflichtend\Unikram\Münster\Hausaufgaben\17.11. Computer Vision\Made\SeamCarving\x64\Debug\SeamCarving.pdb (Full PDB)

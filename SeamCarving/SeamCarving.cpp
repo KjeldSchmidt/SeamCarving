@@ -18,6 +18,12 @@ int main() {
 
 		SeamDetector seamDetector( image );
 
+		seamDetector.prepareEnergyMatrix();
+		scaledImage.showImage( *seamDetector.getImage() );
+		EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
+
+		system( "pause" );
+
 		int oldHeight = seamDetector.getHeight();
 		int oldWidth = seamDetector.getWidth();
 		int rowsToRemoveCount = oldHeight - askUserForNewHeight( oldHeight );
@@ -44,6 +50,7 @@ int main() {
 		seamDetector.setCorrectOrientation();
 		scaledImage.showImage( *seamDetector.getImage() );
 		EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
+
 	} else {
 		std::cout << "Empty image" << std::endl;
 	}

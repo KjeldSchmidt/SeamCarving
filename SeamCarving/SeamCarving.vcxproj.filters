@@ -75,5 +75,8 @@
     <Image Include="bars.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="lena.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

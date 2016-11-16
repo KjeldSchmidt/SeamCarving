@@ -3,8 +3,6 @@
 
 
 EnergyFunctions::EnergyFunctions() {}
-
-
 EnergyFunctions::~EnergyFunctions() {}
 
 cv::Mat EnergyFunctions::StupidBrightness( const cv::Mat& image ) {
@@ -30,8 +28,8 @@ cv::Mat EnergyFunctions::DirectionIndependentSobel( const cv::Mat& image ) {
 	int height = image.rows;
 	int width = image.cols;
 	cv::Mat lumaMap = cv::Mat( height, width, CV_8UC1 );
-	cv::Mat gx = cv::Mat( height, width, CV_8SC1 );
-	cv::Mat gy = cv::Mat( height, width, CV_8SC1 );
+	cv::Mat gx = cv::Mat( height, width, CV_32SC1 );
+	cv::Mat gy = cv::Mat( height, width, CV_32SC1 );
 	cv::Mat directionIndependentMat = cv::Mat( height, width, CV_8UC1 );
 
 	lumaFromBGR( image, lumaMap );
@@ -62,18 +60,9 @@ void EnergyFunctions::lumaFromBGR( cv::Mat const &source, cv::Mat &destination )
 }
 
 void EnergyFunctions::SobelX( cv::Mat const &source, cv::Mat &destination ) {
-	const unsigned char *rowTop;
-	const unsigned char *rowMid;
-	const unsigned char *rowBot;
-
-	unsigned char tl;
-	unsigned char ml;
-	unsigned char bl;
-	unsigned char tr;
-	unsigned char mr;
-	unsigned char br;
-
-	int kernelPixel;
+	const unsigned char *rowTop, *rowMid, *rowBot;
+	unsigned char tl, ml, bl, tr, mr, br;
+	int sum;
 
 	for ( int row = 1; row < source.rows - 1; ++row ) {
 		rowTop = source.ptr<unsigned char>( row - 1 );
@@ -87,25 +76,18 @@ void EnergyFunctions::SobelX( cv::Mat const &source, cv::Mat &destination ) {
 			mr = rowMid[ col + 1 ] * -2;
 			br = rowBot[ col + 1 ] * -1;
 
-			kernelPixel = ( tl + ml + bl + tr + mr + br ) / 8;
+			sum = tl + ml + bl + tr + mr + br;
+			sum = sum;
 
-			destination.at<char>( CvPoint( col, row ) ) = kernelPixel;
+			destination.at<int>( CvPoint( col, row ) ) = sum;
 		}
 	}
 }
 
 void EnergyFunctions::SobelY( cv::Mat const &source, cv::Mat &destination ) {
-	const unsigned char *rowTop;
-	const unsigned char *rowBot;
-
-	unsigned char lt;
-	unsigned char mt;
-	unsigned char rt;
-	unsigned char lb;
-	unsigned char mb;
-	unsigned char rb;
-
-	int kernelPixel;
+	const unsigned char *rowTop, *rowBot;
+	unsigned char lt, mt, rt, lb, mb, rb;
+	int sum;
 
 	for ( int row = 1; row < source.rows - 1; ++row ) {
 		rowTop = source.ptr<unsigned char>( row - 1 );
@@ -118,28 +100,91 @@ void EnergyFunctions::SobelY( cv::Mat const &source, cv::Mat &destination ) {
 			mb = rowBot[ col ] * -2;
 			rb = rowBot[ col + 1 ] * -1;
 
-			kernelPixel = ( lt + mt + rt + lb + mb + rb ) / 8;
+			sum = lt + mt + rt + lb + mb + rb;
+			sum = sum;
 
-			destination.at<char>( CvPoint( col, row ) ) = kernelPixel;
+			destination.at<int>( CvPoint( col, row ) ) = sum;
 		}
 	}
 }
 
 void EnergyFunctions::combineSobelDirections( cv::Mat const gx, cv::Mat const gy, cv::Mat output ) {
-	const char *xRow;
-	const char *yRow;
+	const int *xRow, *yRow;
 	unsigned char *outRow;
-	int tempValue = 0;
+	int sum;
+	char truncatedSum;
 
-	for ( int row = 0; row < output.rows; ++row )
-	{
-		xRow = gx.ptr<char>( row );
-		yRow = gy.ptr<char>( row );
+
+	for ( int row = 0; row < output.rows; ++row ) {
+		xRow = gx.ptr<int>( row );
+		yRow = gy.ptr<int>( row );
 		outRow = output.ptr<unsigned char>( row );
 
 		for ( int col = 0; col < output.cols; ++col ) {
-			outRow[ col ] = std::abs( xRow[col] ) + std::abs( yRow[col] );
+			sum = std::abs( xRow[ col ] ) + std::abs( yRow[ col ] );
+			if ( sum > 255 ) {
+				truncatedSum = 255;
+			} else if ( sum < 0 ) {
+				truncatedSum = 0;
+			} else {
+				truncatedSum = static_cast< unsigned char >( sum );
+			}
+
+			outRow[ col ] = truncatedSum;
+		}
+	}
+}
+
+// Computes the x component of the gradient vector
+// at a given point in a image.
+// returns gradient in the x direction
+int xGradient( cv::Mat image, int x, int y ) {
+	return image.at<uchar>( y - 1, x - 1 ) +
+		2 * image.at<uchar>( y, x - 1 ) +
+		image.at<uchar>( y + 1, x - 1 ) -
+		image.at<uchar>( y - 1, x + 1 ) -
+		2 * image.at<uchar>( y, x + 1 ) -
+		image.at<uchar>( y + 1, x + 1 );
+}
+
+// Computes the y component of the gradient vector
+// at a given point in a image
+// returns gradient in the y direction
+
+int yGradient( cv::Mat image, int x, int y ) {
+	return image.at<uchar>( y - 1, x - 1 ) +
+		2 * image.at<uchar>( y - 1, x ) +
+		image.at<uchar>( y - 1, x + 1 ) -
+		image.at<uchar>( y + 1, x - 1 ) -
+		2 * image.at<uchar>( y + 1, x ) -
+		image.at<uchar>( y + 1, x + 1 );
+}
+
+cv::Mat EnergyFunctions::sample( const cv::Mat &image ) {
+
+	cv::Mat src, dst;
+	int gx, gy, sum;
+
+	// Load an image
+	cv::Mat lumaMap = cv::Mat( image.rows, image.cols, CV_8UC1 );
+	lumaFromBGR( image, lumaMap );
+	dst = lumaMap.clone();
+	
+	for ( int y = 0; y < lumaMap.rows; y++ )
+		for ( int x = 0; x < lumaMap.cols; x++ )
+			dst.at<uchar>( y, x ) = 0.0;
+
+	for ( int y = 1; y < lumaMap.rows - 1; y++ ) {
+		for ( int x = 1; x < lumaMap.cols - 1; x++ ) {
+			gx = xGradient( lumaMap, x, y );
+			gy = yGradient( lumaMap, x, y );
+			sum = abs( gx ) + abs( gy );
+			sum = sum / 4;
+			sum = sum > 255 ? 255 : sum;
+			sum = sum < 0 ? 0 : sum;
+			dst.at<uchar>( y, x ) = sum;
 		}
 	}
 
+	return dst;
 }
