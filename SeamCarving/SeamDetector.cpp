@@ -6,7 +6,7 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
 	width = originalImageMatrix.cols;
 	height = originalImageMatrix.rows;
 
-	energyMatrix = *new cv::Mat( height, width, CV_8SC1 );
+	energyMatrix = *new cv::Mat( height, width, CV_8UC1 );
 	seamMatrix = *new cv::Mat( height, width, CV_32SC1 );
 }
 
@@ -16,18 +16,18 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
  */
 void SeamDetector::prepareEnergyMatrix() {
 
-	energyMatrix = EnergyFunctions::StupidBrightness( originalImageMatrix );
+	energyMatrix = EnergyFunctions::DirectionIndependentSobel( originalImageMatrix );
 	energyMatrixIsSet = true;
 }
 
 void SeamDetector::prepareSeamMatrix()
 {
-	char *energyRow;
+	unsigned char *energyRow;
 	int *seamRow;
 
 	for ( int row = 0; row < height; ++row )
 	{
-		energyRow = energyMatrix.ptr<char>( row );
+		energyRow = energyMatrix.ptr<unsigned char>( row );
 		seamRow = seamMatrix.ptr<int>( row );
 		for ( int col = 0; col < width; ++col ) {
 			seamRow[ col ] = energyRow[ col ];
@@ -147,7 +147,7 @@ void SeamDetector::removeSeam()
 
 	for ( auto p = verticalSeam.begin(); p != verticalSeam.end(); ++p, --rowIndex ) {
 		auto *imagePointer = originalImageMatrix.ptr<cv::Vec3b>( rowIndex );
-		char *energyPointer = energyMatrix.ptr<char>( rowIndex );
+		unsigned char *energyPointer = energyMatrix.ptr<unsigned char>( rowIndex );
 
 		for ( int colIndex = *p; colIndex < width - 1; ++colIndex ) {
 			imagePointer[ colIndex ] = imagePointer[ colIndex + 1 ];

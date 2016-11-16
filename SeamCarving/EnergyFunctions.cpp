@@ -19,24 +19,27 @@ cv::Mat EnergyFunctions::StupidBrightness( const cv::Mat& image ) {
 		imageRow = image.ptr<cv::Vec3b>( row );
 		mapRow = lumaMap.ptr<unsigned char>( row );
 		for ( int col = 0; col < width; ++col ) {
-			mapRow[ col ] = ( imageRow[col][ 0 ] + imageRow[col][ 1 ] + imageRow[col][ 2 ] ) / 3;
+			mapRow[ col ] = ( imageRow[ col ][ 0 ] + imageRow[ col ][ 1 ] + imageRow[ col ][ 2 ] ) / 3;
 		}
 	}
 
 	return lumaMap;
 }
 
-cv::Mat EnergyFunctions::DirectionIndependentSorbel( const cv::Mat& image ) {
+cv::Mat EnergyFunctions::DirectionIndependentSobel( const cv::Mat& image ) {
 	int height = image.rows;
 	int width = image.cols;
 	cv::Mat lumaMap = cv::Mat( height, width, CV_8UC1 );
 	cv::Mat gx = cv::Mat( height, width, CV_8SC1 );
 	cv::Mat gy = cv::Mat( height, width, CV_8SC1 );
-	lumaFromBGR( image, lumaMap );
-	SorbelX( lumaMap, gx );
-	SorbelY( lumaMap, gy );
+	cv::Mat directionIndependentMat = cv::Mat( height, width, CV_8UC1 );
 
-	return gx;
+	lumaFromBGR( image, lumaMap );
+	SobelX( lumaMap, gx );
+	SobelY( lumaMap, gy );
+	combineSobelDirections( gx, gy, directionIndependentMat );
+
+	return directionIndependentMat;
 }
 
 void EnergyFunctions::lumaFromBGR( cv::Mat const &source, cv::Mat &destination ) {
@@ -58,7 +61,7 @@ void EnergyFunctions::lumaFromBGR( cv::Mat const &source, cv::Mat &destination )
 	}
 }
 
-void EnergyFunctions::SorbelX( cv::Mat const &source, cv::Mat &destination ) {
+void EnergyFunctions::SobelX( cv::Mat const &source, cv::Mat &destination ) {
 	const unsigned char *rowTop;
 	const unsigned char *rowMid;
 	const unsigned char *rowBot;
@@ -91,7 +94,7 @@ void EnergyFunctions::SorbelX( cv::Mat const &source, cv::Mat &destination ) {
 	}
 }
 
-void EnergyFunctions::SorbelY( cv::Mat const &source, cv::Mat &destination ) {
+void EnergyFunctions::SobelY( cv::Mat const &source, cv::Mat &destination ) {
 	const unsigned char *rowTop;
 	const unsigned char *rowBot;
 
@@ -120,4 +123,23 @@ void EnergyFunctions::SorbelY( cv::Mat const &source, cv::Mat &destination ) {
 			destination.at<char>( CvPoint( col, row ) ) = kernelPixel;
 		}
 	}
+}
+
+void EnergyFunctions::combineSobelDirections( cv::Mat const gx, cv::Mat const gy, cv::Mat output ) {
+	const char *xRow;
+	const char *yRow;
+	unsigned char *outRow;
+	int tempValue = 0;
+
+	for ( int row = 0; row < output.rows; ++row )
+	{
+		xRow = gx.ptr<char>( row );
+		yRow = gy.ptr<char>( row );
+		outRow = output.ptr<unsigned char>( row );
+
+		for ( int col = 0; col < output.cols; ++col ) {
+			outRow[ col ] = std::abs( xRow[col] ) + std::abs( yRow[col] );
+		}
+	}
+
 }
