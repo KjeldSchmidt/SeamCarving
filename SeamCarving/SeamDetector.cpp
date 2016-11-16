@@ -16,7 +16,7 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
  */
 void SeamDetector::prepareEnergyMatrix() {
 
-	energyMatrix = EnergyFunctions::sample( originalImageMatrix );
+	energyMatrix = EnergyFunctions::DirectionIndependentSobel( originalImageMatrix );
 	energyMatrixIsSet = true;
 }
 
