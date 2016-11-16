@@ -16,7 +16,7 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
  */
 void SeamDetector::prepareEnergyMatrix() {
 
-	energyMatrix = EnergyFunctions::DirectionIndependentSorbel( originalImageMatrix );
+	energyMatrix = EnergyFunctions::StupidBrightness( originalImageMatrix );
 	energyMatrixIsSet = true;
 }
 
@@ -55,30 +55,32 @@ void SeamDetector::findSeam()
 }
 
 void SeamDetector::iterateSeamMatrix( int row ) {
+
+	int *seamPointerPrev = seamMatrix.ptr<int>( row - 1 );
+	int *seamPointerCurrent = seamMatrix.ptr<int>( row );
+
 	for ( auto col = 0; col < width; ++col ) {
 		int lowestNeighbourAbove = 0;
 		int left = MAX_INT;
 		int right = MAX_INT;
-		int *rowData = seamMatrix.ptr<int>( row - 1 );
+		int top = seamPointerPrev[ col ];
 
-		int top = rowData[ col ];
 		if ( col > 0 ) {
-			left = rowData[ col - 1 ];
+			left = seamPointerPrev[ col - 1 ];
 		}
 		if ( col < width - 1 ) {
-			right = rowData[ col + 1 ];
+			right = seamPointerPrev[ col + 1 ];
 		}
 
 		lowestNeighbourAbove = ( left < top ) ? left : top;
 		lowestNeighbourAbove = ( right < lowestNeighbourAbove ) ? right : lowestNeighbourAbove;
 
-		seamMatrix.ptr<int>( row )[ col ] += lowestNeighbourAbove;
+		seamPointerCurrent[ col ] += lowestNeighbourAbove;
 	}
 }
 
 void SeamDetector::traceSeam() {
 	findSeamStartingPoint();
-
 
 	for ( int row = height - 2; row > 0; --row ) {
 		iterateSeam( row );
@@ -88,8 +90,9 @@ void SeamDetector::traceSeam() {
 void SeamDetector::findSeamStartingPoint() {
 	int startingPoint = 0;
 	int minimumEnergy = MAX_INT;
-	for ( int col = 0; col < seamMatrix.cols; ++col ) {
+	for ( int col = 0; col < width; ++col ) {
 		int energyAtIndex = seamMatrix.at<int>( CvPoint( col, height - 1 ) );
+
 		if ( energyAtIndex < minimumEnergy ) {
 			startingPoint = col;
 			minimumEnergy = energyAtIndex;
@@ -104,24 +107,26 @@ void SeamDetector::iterateSeam( int row ) {
 	int previousIndex = verticalSeam.back();    // The index of the last point of the seam. Only check top left, top top and top right from here.
 	char indexShift = 0;                        // Will indicate where to move next. Should only ever be -1, 0 or 1.
 
-	int leftEnergy;
-	int rightEnergy;
+	int leftEnergy = MAX_INT;
+	int rightEnergy = MAX_INT;
 	int topEnergy = seamMatrix.at<int>( CvPoint( previousIndex, row - 1 ) );
 	int lowestEnergyAbove = topEnergy;
 
 	if ( previousIndex > 0 ) {
 		leftEnergy = seamMatrix.at<int>( CvPoint( previousIndex - 1, row - 1 ) );
-		if ( leftEnergy < lowestEnergyAbove ) {
-			lowestEnergyAbove = leftEnergy;
-			indexShift = -1;
-		}
 	}
 
 	if ( previousIndex < width - 1 ) {
 		rightEnergy = seamMatrix.at<int>( CvPoint( previousIndex + 1, row - 1 ) );
-		if ( rightEnergy < lowestEnergyAbove ) {
-			indexShift = 1;
-		}
+	}
+
+	if ( leftEnergy < lowestEnergyAbove ) {
+		lowestEnergyAbove = leftEnergy;
+		indexShift = -1;
+	}
+
+	if ( rightEnergy < lowestEnergyAbove ) {
+		indexShift = 1;
 	}
 
 	verticalSeam.push_back( previousIndex + indexShift );
@@ -132,7 +137,7 @@ void SeamDetector::drawSeam()
 	auto p = verticalSeam.begin();
 	int rowIndex = height - 1;
 	for ( ; p != verticalSeam.end(); ++p, --rowIndex ) {
-		originalImageMatrix.at<cv::Vec3b>( CvPoint( *p, rowIndex ) ) = cv::Vec3b( 255, 0, 0 );
+		originalImageMatrix.at<cv::Vec3b>( CvPoint( *p, rowIndex ) ) = cv::Vec3b( 0, 255, 0 );
 	}
 }
 
@@ -140,11 +145,9 @@ void SeamDetector::removeSeam()
 {
 	int rowIndex = height - 1;
 
-	std::cout << "Height: " << height << " image.rows" << originalImageMatrix.rows << " vector length: " << verticalSeam.size() << std::endl;
-
-	for ( auto p = verticalSeam.begin(); p != verticalSeam.end(); ++p ) {
+	for ( auto p = verticalSeam.begin(); p != verticalSeam.end(); ++p, --rowIndex ) {
 		auto *imagePointer = originalImageMatrix.ptr<cv::Vec3b>( rowIndex );
-		int *energyPointer = energyMatrix.ptr<int>( rowIndex );
+		char *energyPointer = energyMatrix.ptr<char>( rowIndex );
 
 		for ( int colIndex = *p; colIndex < width - 1; ++colIndex ) {
 			imagePointer[ colIndex ] = imagePointer[ colIndex + 1 ];
@@ -152,9 +155,7 @@ void SeamDetector::removeSeam()
 		}
 
 		imagePointer[ width ] = cv::Vec3b( 0, 0, 0 );
-		energyPointer[ width ] = MAX_INT;
-
-		--rowIndex;
+		energyPointer[ width ] = MAX_CHAR;
 	}
 
 	--width;

@@ -9,7 +9,7 @@ int main() {
 	ImageDisplay EnergyImage( "Energy Map" );
 	ImageDisplay scaledImage( "Scaled Image" );
 
-	cv::Mat image = ImageReader::readImage( "bars.jpg" );
+	cv::Mat image = ImageReader::readImage( "testimage.jpg" );
 
 
 	if ( !image.empty() ) {
@@ -43,6 +43,7 @@ int main() {
 
 		seamDetector.setCorrectOrientation();
 		scaledImage.showImage( *seamDetector.getImage() );
+		EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
 	} else {
 		std::cout << "Empty image" << std::endl;
 	}

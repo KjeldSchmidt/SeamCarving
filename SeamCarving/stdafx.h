@@ -20,6 +20,8 @@
 
 const int MAX_INT = std::numeric_limits<int>::max();
 const int MIN_INT = std::numeric_limits<int>::min();
+const char MAX_CHAR = std::numeric_limits<char>::max();
+const char MIN_CHAR = std::numeric_limits<char>::min();
 
 
 // TODO: reference additional headers your program requires here

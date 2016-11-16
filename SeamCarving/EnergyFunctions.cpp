@@ -7,7 +7,26 @@ EnergyFunctions::EnergyFunctions() {}
 
 EnergyFunctions::~EnergyFunctions() {}
 
-cv::Mat EnergyFunctions::DirectionIndependentSorbel(const cv::Mat& image) {
+cv::Mat EnergyFunctions::StupidBrightness( const cv::Mat& image ) {
+	int height = image.rows;
+	int width = image.cols;
+	cv::Mat lumaMap = cv::Mat( height, width, CV_8UC1 );
+
+	const cv::Vec3b *imageRow;
+	unsigned char *mapRow;
+
+	for ( int row = 0; row < height; ++row ) {
+		imageRow = image.ptr<cv::Vec3b>( row );
+		mapRow = lumaMap.ptr<unsigned char>( row );
+		for ( int col = 0; col < width; ++col ) {
+			mapRow[ col ] = ( imageRow[col][ 0 ] + imageRow[col][ 1 ] + imageRow[col][ 2 ] ) / 3;
+		}
+	}
+
+	return lumaMap;
+}
+
+cv::Mat EnergyFunctions::DirectionIndependentSorbel( const cv::Mat& image ) {
 	int height = image.rows;
 	int width = image.cols;
 	cv::Mat lumaMap = cv::Mat( height, width, CV_8UC1 );
@@ -17,26 +36,24 @@ cv::Mat EnergyFunctions::DirectionIndependentSorbel(const cv::Mat& image) {
 	SorbelX( lumaMap, gx );
 	SorbelY( lumaMap, gy );
 
-	return gy;
+	return gx;
 }
 
 void EnergyFunctions::lumaFromBGR( cv::Mat const &source, cv::Mat &destination ) {
-	const cv::Vec3b *sourceRowPointer; 
+	const cv::Vec3b *sourceRowPointer;
 	unsigned char *destRowPointer;
 
 	int cols = source.cols;
 	int rows = source.rows;
 
 	cv::Vec3b coloredPixel;
-	for ( int row = 0; row < rows; ++row )
-	{
+	for ( int row = 0; row < rows; ++row ) {
 		sourceRowPointer = source.ptr<cv::Vec3b>( row );
 		destRowPointer = destination.ptr< unsigned char>( row );
-		for ( int col = 0; col < cols; ++col )
-		{
+		for ( int col = 0; col < cols; ++col ) {
 			coloredPixel = sourceRowPointer[ col ];
 			// According to http://stackoverflow.com/a/596241
-			destRowPointer[ col ] = (coloredPixel[ 0 ] + coloredPixel[ 1 ] + +coloredPixel[ 1 ] + +coloredPixel[ 1 ] + coloredPixel[ 2 ] + coloredPixel[ 2 ])/6;
+			destRowPointer[ col ] = ( coloredPixel[ 0 ] + coloredPixel[ 1 ] + +coloredPixel[ 1 ] + +coloredPixel[ 1 ] + coloredPixel[ 2 ] + coloredPixel[ 2 ] ) / 6;
 		}
 	}
 }
@@ -67,7 +84,7 @@ void EnergyFunctions::SorbelX( cv::Mat const &source, cv::Mat &destination ) {
 			mr = rowMid[ col + 1 ] * -2;
 			br = rowBot[ col + 1 ] * -1;
 
-			kernelPixel = (tl + ml + bl + tr + mr + br)/8;
+			kernelPixel = ( tl + ml + bl + tr + mr + br ) / 8;
 
 			destination.at<char>( CvPoint( col, row ) ) = kernelPixel;
 		}
@@ -98,7 +115,7 @@ void EnergyFunctions::SorbelY( cv::Mat const &source, cv::Mat &destination ) {
 			mb = rowBot[ col ] * -2;
 			rb = rowBot[ col + 1 ] * -1;
 
-			kernelPixel = (lt + mt + rt + lb + mb + rb)/8;
+			kernelPixel = ( lt + mt + rt + lb + mb + rb ) / 8;
 
 			destination.at<char>( CvPoint( col, row ) ) = kernelPixel;
 		}
