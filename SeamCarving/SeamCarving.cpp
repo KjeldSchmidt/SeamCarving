@@ -3,6 +3,7 @@
 int getNumberOfRowsToBeRemoved( int oldHeight );
 int getNumberOfColumnsToBeRemoved( int oldWidth );
 SeamDetector openImageDialog();
+void saveImageDialog( cv::Mat image );
 void removeColumns( int columnsToRemoveCount, SeamDetector &sd );
 void removeRows( int rowsToRemoveCount, SeamDetector &sd );
 
@@ -23,9 +24,11 @@ int main() {
 	removeColumns( colsToRemoveCount, seamDetector );
 	removeRows( rowsToRemoveCount, seamDetector );
 
-	seamDetector.setCorrectOrientation();
+	seamDetector.finalize();
 	scaledImage.showImage( *seamDetector.getImage() );
 	energyMap.showImage( *seamDetector.getEnergyMatrix() );
+
+	saveImageDialog( *seamDetector.getImage() );
 
 	system( "pause" );
 
@@ -49,6 +52,19 @@ SeamDetector openImageDialog() {
 			std::cout << "File could not be opened. Check for spelling errors and try again" << std::endl;
 		}
 	}
+}
+
+void saveImageDialog( cv::Mat image ) {
+	std::string file;
+	std::cout << "Please enter a name for your image, such as 'friends', 'canoe', or 'muffins'." << std::endl;
+	std::cin >> file;
+	if ( file.size() == 0 ) {
+		file.append( "default" );
+	}
+	file.append( ".jpg" );
+
+	cv::imwrite( file, image );
+	std::cout << "File has been saved as " << file << std::endl;
 }
 
 void removeColumns( int colsToRemoveCount, SeamDetector &seamDetector ) {
@@ -89,7 +105,7 @@ int getNumberOfRowsToBeRemoved( int oldHeight ) {
 int getNumberOfColumnsToBeRemoved( int oldWidth ) {
 	int colsToRemove = 0;
 	while ( colsToRemove < 1 || colsToRemove > oldWidth ) {
-		std::cout << "How many colums should be removed? Valid values: 0 to " << oldWidth << ", inclusive" << std::endl;
+		std::cout << "How many columns should be removed? Valid values: 0 to " << oldWidth << ", inclusive" << std::endl;
 		scanf_s( "%i", &colsToRemove );
 
 		if ( colsToRemove < 1 || colsToRemove > oldWidth ) {

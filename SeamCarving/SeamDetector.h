@@ -25,6 +25,8 @@ private:
 	void iterateSeam( int row );
 
 	void transpose();
+	void setCorrectOrientation();
+	void trim();
 
 public:
 	explicit  SeamDetector( cv::Mat &originalImage );
@@ -38,7 +40,7 @@ public:
 	void drawHorizontalSeam();
 	void removeHorizontalSeam();
 
-	void setCorrectOrientation();
+	void finalize();
 	cv::Mat * getImage();
 	cv::Mat * getEnergyMatrix();
 	cv::Mat* getSeamMatrix();

@@ -1,0 +1,13 @@
+﻿  stdafx.cpp
+  EnergyFunctions.cpp
+  ImageDisplay.cpp
+  ImageReader.cpp
+  SeamCarving.cpp
+  SeamDetector.cpp
+  Generating code
+  6 of 310 functions ( 1.9%) were compiled, the rest were copied from previous compilation.
+    5 functions were new in current compilation
+    11 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  SeamCarving.vcxproj -> D:\Verpflichtend\Unikram\Münster\Hausaufgaben\17.11. Computer Vision\Made\SeamCarving\x64\Release\SeamCarving.exe
+  SeamCarving.vcxproj -> D:\Verpflichtend\Unikram\Münster\Hausaufgaben\17.11. Computer Vision\Made\SeamCarving\x64\Release\SeamCarving.pdb (Full PDB)

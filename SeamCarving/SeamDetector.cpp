@@ -16,13 +16,11 @@ void SeamDetector::prepareEnergyMatrix() {
 	energyMatrixIsSet = true;
 }
 
-void SeamDetector::prepareSeamMatrix()
-{
+void SeamDetector::prepareSeamMatrix() {
 	unsigned char *energyRow;
 	int *seamRow;
 
-	for ( int row = 0; row < height; ++row )
-	{
+	for ( int row = 0; row < height; ++row ) {
 		energyRow = energyMatrix.ptr<unsigned char>( row );
 		seamRow = seamMatrix.ptr<int>( row );
 		for ( int col = 0; col < width; ++col ) {
@@ -31,11 +29,9 @@ void SeamDetector::prepareSeamMatrix()
 	}
 }
 
-void SeamDetector::findSeam()
-{
+void SeamDetector::findSeam() {
 
-	if ( !energyMatrixIsSet )
-	{
+	if ( !energyMatrixIsSet ) {
 		prepareEnergyMatrix();
 	}
 
@@ -78,7 +74,7 @@ void SeamDetector::iterateSeamMatrix( int row ) {
 void SeamDetector::traceSeam() {
 	findSeamStartingPoint();
 
-	for ( int row = height - 2; row > 0; --row ) {
+	for ( int row = height - 1; row > 0; --row ) {
 		iterateSeam( row );
 	}
 }
@@ -99,9 +95,8 @@ void SeamDetector::findSeamStartingPoint() {
 }
 
 void SeamDetector::iterateSeam( int row ) {
-	// Initialize default values.
-	int previousIndex = verticalSeam.back();    // The index of the last point of the seam. Only check top left, top top and top right from here.
-	char indexShift = 0;                        // Will indicate where to move next. Should only ever be -1, 0 or 1.
+	int previousIndex = verticalSeam.back();
+	char indexShift = 0;
 
 	int leftEnergy = MAX_INT;
 	int rightEnergy = MAX_INT;
@@ -128,8 +123,7 @@ void SeamDetector::iterateSeam( int row ) {
 	verticalSeam.push_back( previousIndex + indexShift );
 }
 
-void SeamDetector::drawSeam()
-{
+void SeamDetector::drawSeam() {
 	auto p = verticalSeam.begin();
 	int rowIndex = height - 1;
 	for ( ; p != verticalSeam.end(); ++p, --rowIndex ) {
@@ -137,8 +131,7 @@ void SeamDetector::drawSeam()
 	}
 }
 
-void SeamDetector::removeSeam()
-{
+void SeamDetector::removeSeam() {
 	int rowIndex = height - 1;
 
 	for ( auto p = verticalSeam.begin(); p != verticalSeam.end(); ++p, --rowIndex ) {
@@ -224,10 +217,21 @@ cv::Mat* SeamDetector::getImage() {
 	return &originalImageMatrix;
 }
 
+void SeamDetector::finalize() {
+	setCorrectOrientation();
+	trim();
+}
+
 void SeamDetector::setCorrectOrientation() {
 	if ( currentlyTransposed ) {
 		transpose();
 	}
+}
+
+void SeamDetector::trim() {
+	cv::Rect cropRect( 0, 0, width, height );
+	energyMatrix = energyMatrix( cropRect );
+	originalImageMatrix = originalImageMatrix( cropRect );
 }
 
 cv::Mat* SeamDetector::getEnergyMatrix() {
