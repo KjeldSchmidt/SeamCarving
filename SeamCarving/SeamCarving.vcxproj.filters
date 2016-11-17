@@ -78,5 +78,11 @@
     <Image Include="lena.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="valve.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\castle.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

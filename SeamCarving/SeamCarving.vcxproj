@@ -187,8 +187,10 @@
   <ItemGroup>
     <Image Include="bars.jpg" />
     <Image Include="bars.png" />
+    <Image Include="images\castle.jpg" />
     <Image Include="lena.png" />
     <Image Include="testImage.jpg" />
+    <Image Include="valve.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

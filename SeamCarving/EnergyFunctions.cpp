@@ -41,6 +41,42 @@ void EnergyFunctions::lumaFromBGR( cv::Mat const &source, cv::Mat &destination )
 	}
 }
 
+/*
+ * NOTE: smoothLumaMap() is not currently used, but I left it in code because it sometimes produced interesting results.
+ */
+
+cv::Mat EnergyFunctions::smoothLumaMap( const cv::Mat & source ) {
+
+	int height = source.rows;
+	int width = source.cols;
+
+	cv::Mat smoothLuma( height, width, CV_8UC1 );
+
+	const unsigned char *top, *mid, *bot;
+	unsigned char *rowSmooth;
+	int sum;
+
+	for ( int row = 1; row < source.rows - 1; ++row ) {
+		top = source.ptr<unsigned char>( row - 1 );
+		mid = source.ptr<unsigned char>( row );
+		bot = source.ptr<unsigned char>( row + 1 );
+		rowSmooth = smoothLuma.ptr<unsigned char>( row );
+
+		for ( int col = 1; col < source.cols - 1; ++col ) {
+
+			sum =
+				top[ col - 1 ] + top[ col ] + top[ col + 1 ] +
+				mid[ col - 1 ] + mid[ col ] + mid[ col + 1 ] +
+				bot[ col - 1 ] + bot[ col ] + bot[ col + 1 ];
+			sum = sum / 9;
+
+			rowSmooth[ col ] = sum;
+		}
+	}
+
+	return smoothLuma;
+}
+
 void EnergyFunctions::SobelX( cv::Mat const &source, cv::Mat &destination ) {
 	const unsigned char *rowTop, *rowMid, *rowBot;
 	unsigned char tl, ml, bl, tr, mr, br;
@@ -58,7 +94,7 @@ void EnergyFunctions::SobelX( cv::Mat const &source, cv::Mat &destination ) {
 			mr = rowMid[ col + 1 ];
 			br = rowBot[ col + 1 ];
 
-			sum = tl + ml*2 + bl - tr - mr*2 - br;
+			sum = tl + ml * 2 + bl - tr - mr * 2 - br;
 			sum = sum;
 
 			destination.at<int>( CvPoint( col, row ) ) = sum;
@@ -82,7 +118,7 @@ void EnergyFunctions::SobelY( cv::Mat const &source, cv::Mat &destination ) {
 			mb = rowBot[ col ];
 			rb = rowBot[ col + 1 ];
 
-			sum = lt + mt*2 + rt - lb - mb*2 - rb;
+			sum = lt + mt * 2 + rt - lb - mb * 2 - rb;
 
 			destination.at<int>( CvPoint( col, row ) ) = sum;
 		}
@@ -102,10 +138,9 @@ void EnergyFunctions::combineSobelDirections( cv::Mat const gx, cv::Mat const gy
 
 		for ( int col = 0; col < output.cols; ++col ) {
 			sum = std::abs( xRow[ col ] ) + std::abs( yRow[ col ] );
-			sum = sum / 2;
 			sum = sum > 255 ? 255 : sum;
 			sum = sum < 0 ? 0 : sum;
-			
+
 			outRow[ col ] = sum;
 		}
 	}

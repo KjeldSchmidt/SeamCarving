@@ -9,7 +9,7 @@ int main() {
 	ImageDisplay EnergyImage( "Energy Map" );
 	ImageDisplay scaledImage( "Scaled Image" );
 
-	cv::Mat image = ImageReader::readImage( "testimage.jpg" );
+	cv::Mat image = ImageReader::readImage( "images/castle.jpg" );
 
 
 	if ( !image.empty() ) {
