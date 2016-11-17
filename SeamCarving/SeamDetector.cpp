@@ -96,19 +96,20 @@ void SeamDetector::findSeamStartingPoint() {
 
 void SeamDetector::iterateSeam( int row ) {
 	int previousIndex = verticalSeam.back();
+	int *rowPointer = seamMatrix.ptr<int>( row - 1 );
 	char indexShift = 0;
 
 	int leftEnergy = MAX_INT;
 	int rightEnergy = MAX_INT;
-	int topEnergy = seamMatrix.at<int>( CvPoint( previousIndex, row - 1 ) );
+	int topEnergy = rowPointer[ previousIndex ];
 	int lowestEnergyAbove = topEnergy;
 
 	if ( previousIndex > 0 ) {
-		leftEnergy = seamMatrix.at<int>( CvPoint( previousIndex - 1, row - 1 ) );
+		leftEnergy = rowPointer[ previousIndex - 1 ];
 	}
 
 	if ( previousIndex < width - 1 ) {
-		rightEnergy = seamMatrix.at<int>( CvPoint( previousIndex + 1, row - 1 ) );
+		rightEnergy = rowPointer[ previousIndex + 1 ];
 	}
 
 	if ( leftEnergy < lowestEnergyAbove ) {
