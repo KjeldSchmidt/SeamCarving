@@ -10,10 +10,6 @@ SeamDetector::SeamDetector( cv::Mat &originalImage ) {
 	seamMatrix = *new cv::Mat( height, width, CV_32SC1 );
 }
 
-/*
- * Dummy function - works by stupidity, not any actual energy.
- * TODO: IMPLEMENT ACTUAL ENERGY FUNCTION
- */
 void SeamDetector::prepareEnergyMatrix() {
 
 	energyMatrix = EnergyFunctions::DirectionIndependentSobel( originalImageMatrix );
