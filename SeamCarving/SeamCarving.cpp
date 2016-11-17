@@ -2,6 +2,7 @@
 
 int getNumberOfRowsToBeRemoved( int oldHeight );
 int getNumberOfColumnsToBeRemoved( int oldWidth );
+SeamDetector openImageDialog();
 void removeColumns( int columnsToRemoveCount, SeamDetector &sd );
 void removeRows( int rowsToRemoveCount, SeamDetector &sd );
 
@@ -10,32 +11,44 @@ ImageDisplay scaledImage( "Scaled Image" );
 
 int main() {
 	std::cout << "OpenCV version : " << CV_VERSION << std::endl;
-	cv::Mat image = ImageReader::readImage( "images/castle.jpg" );
+	SeamDetector seamDetector = openImageDialog();
 
-	if ( !image.empty() ) {
-		std::cout << "Image loaded" << std::endl;
-		SeamDetector seamDetector( image );
+	seamDetector.prepareEnergyMatrix();
+	scaledImage.showImage( *seamDetector.getImage() );
+	energyMap.showImage( *seamDetector.getEnergyMatrix() );
 
-		seamDetector.prepareEnergyMatrix();
-		scaledImage.showImage( *seamDetector.getImage() );
-		energyMap.showImage( *seamDetector.getEnergyMatrix() );
+	int rowsToRemoveCount = getNumberOfRowsToBeRemoved( seamDetector.getHeight() );
+	int colsToRemoveCount = getNumberOfColumnsToBeRemoved( seamDetector.getWidth() );
 
-		int rowsToRemoveCount = getNumberOfRowsToBeRemoved( seamDetector.getHeight() );
-		int colsToRemoveCount = getNumberOfColumnsToBeRemoved( seamDetector.getWidth() );
+	removeColumns( colsToRemoveCount, seamDetector );
+	removeRows( rowsToRemoveCount, seamDetector );
 
-		removeColumns( colsToRemoveCount, seamDetector );
-		removeRows( rowsToRemoveCount, seamDetector );
-
-		seamDetector.setCorrectOrientation();
-		scaledImage.showImage( *seamDetector.getImage() );
-		energyMap.showImage( *seamDetector.getEnergyMatrix() );
-	} else {
-		std::cout << "Unfortunately, the image could not be opened." << std::endl;
-	}
+	seamDetector.setCorrectOrientation();
+	scaledImage.showImage( *seamDetector.getImage() );
+	energyMap.showImage( *seamDetector.getEnergyMatrix() );
 
 	system( "pause" );
 
 	return 0;
+}
+
+SeamDetector openImageDialog() {
+	std::string file;
+	cv::Mat image;
+
+	std::cout << "Please enter a file name for an image you would like to open." << std::endl;
+	while ( true ) {
+		std::cin >> file;
+
+		image = ImageReader::readImage( file );
+
+		if ( !image.empty() ) {
+			std::cout << "Image loaded" << std::endl;
+			return SeamDetector( image );
+		} else {
+			std::cout << "File could not be opened. Check for spelling errors and try again" << std::endl;
+		}
+	}
 }
 
 void removeColumns( int colsToRemoveCount, SeamDetector &seamDetector ) {
