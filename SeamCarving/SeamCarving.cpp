@@ -1,58 +1,36 @@
 #include "stdafx.h"
 
-int askUserForNewHeight( int oldHeight );
-int askUserForNewWidth( int oldWidth );
+int getNumberOfRowsToBeRemoved( int oldHeight );
+int getNumberOfColumnsToBeRemoved( int oldWidth );
+void removeColumns( int columnsToRemoveCount, SeamDetector &sd );
+void removeRows( int rowsToRemoveCount, SeamDetector &sd );
+
+ImageDisplay energyMap( "Energy Map" );
+ImageDisplay scaledImage( "Scaled Image" );
 
 int main() {
 	std::cout << "OpenCV version : " << CV_VERSION << std::endl;
-
-	ImageDisplay EnergyImage( "Energy Map" );
-	ImageDisplay scaledImage( "Scaled Image" );
-
 	cv::Mat image = ImageReader::readImage( "images/castle.jpg" );
-
 
 	if ( !image.empty() ) {
 		std::cout << "Image loaded" << std::endl;
-
-
 		SeamDetector seamDetector( image );
 
 		seamDetector.prepareEnergyMatrix();
 		scaledImage.showImage( *seamDetector.getImage() );
-		EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
+		energyMap.showImage( *seamDetector.getEnergyMatrix() );
 
-		system( "pause" );
+		int rowsToRemoveCount = getNumberOfRowsToBeRemoved( seamDetector.getHeight() );
+		int colsToRemoveCount = getNumberOfColumnsToBeRemoved( seamDetector.getWidth() );
 
-		int oldHeight = seamDetector.getHeight();
-		int oldWidth = seamDetector.getWidth();
-		int rowsToRemoveCount = oldHeight - askUserForNewHeight( oldHeight );
-		int colsToRemoveCount = oldWidth - askUserForNewWidth( oldWidth );
-
-
-		for ( int i = 0; i < colsToRemoveCount; ++i ) {
-			seamDetector.findVerticalSeam();
-			seamDetector.drawVerticalSeam();
-			scaledImage.showImage( *seamDetector.getImage() );
-			EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
-			seamDetector.removeVerticalSeam();
-		}
-
-		for ( int i = 0; i < rowsToRemoveCount; ++i ) {
-			seamDetector.findHorizontalSeam();
-			seamDetector.drawHorizontalSeam();
-			scaledImage.showImage( *seamDetector.getImage() );
-			EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
-			seamDetector.removeHorizontalSeam();
-		}
-
+		removeColumns( colsToRemoveCount, seamDetector );
+		removeRows( rowsToRemoveCount, seamDetector );
 
 		seamDetector.setCorrectOrientation();
 		scaledImage.showImage( *seamDetector.getImage() );
-		EnergyImage.showImage( *seamDetector.getEnergyMatrix() );
-
+		energyMap.showImage( *seamDetector.getEnergyMatrix() );
 	} else {
-		std::cout << "Empty image" << std::endl;
+		std::cout << "Unfortunately, the image could not be opened." << std::endl;
 	}
 
 	system( "pause" );
@@ -60,32 +38,52 @@ int main() {
 	return 0;
 }
 
-int askUserForNewHeight( int oldHeight ) {
-	int newHeight = 0;
-	while ( newHeight < 1 || newHeight > oldHeight ) {
-		std::cout << "Enter new height between 1 and " << oldHeight << " (inclusive)" << std::endl;
-		scanf_s( "%i", &newHeight );
-
-		if ( newHeight < 1 || newHeight > oldHeight ) {
-			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
-		}
-		while ( getchar() != '\n' );
+void removeColumns( int colsToRemoveCount, SeamDetector &seamDetector ) {
+	for ( int i = 0; i < colsToRemoveCount; ++i ) {
+		seamDetector.findVerticalSeam();
+		seamDetector.drawVerticalSeam();
+		scaledImage.showImage( *seamDetector.getImage() );
+		energyMap.showImage( *seamDetector.getEnergyMatrix() );
+		seamDetector.removeVerticalSeam();
 	}
-
-	return newHeight;
 }
 
-int askUserForNewWidth( int oldWidth ) {
-	int newWidth = 0;
-	while ( newWidth < 1 || newWidth > oldWidth ) {
-		std::cout << "Enter new width between 1 and " << oldWidth << " (inclusive)" << std::endl;
-		scanf_s( "%i", &newWidth );
+void removeRows( int rowsToRemoveCount, SeamDetector &seamDetector ) {
+	for ( int i = 0; i < rowsToRemoveCount; ++i ) {
+		seamDetector.findHorizontalSeam();
+		seamDetector.drawHorizontalSeam();
+		scaledImage.showImage( *seamDetector.getImage() );
+		energyMap.showImage( *seamDetector.getEnergyMatrix() );
+		seamDetector.removeHorizontalSeam();
+	}
+}
 
-		if ( newWidth < 1 || newWidth > oldWidth ) {
+int getNumberOfRowsToBeRemoved( int oldHeight ) {
+	int rowsToRemove = 0;
+	while ( rowsToRemove < 1 || rowsToRemove > oldHeight ) {
+		std::cout << "How many rows should be removed? Valid values: 0 to " << oldHeight << ", inclusive" << std::endl;
+		scanf_s( "%i", &rowsToRemove );
+
+		if ( rowsToRemove < 1 || rowsToRemove > oldHeight ) {
 			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
 		}
-		while ( getchar() != '\n' );
+		while ( getchar() != '\n' ); // This loop removes remaining input from stdin.
 	}
 
-	return newWidth;
+	return rowsToRemove;
+}
+
+int getNumberOfColumnsToBeRemoved( int oldWidth ) {
+	int colsToRemove = 0;
+	while ( colsToRemove < 1 || colsToRemove > oldWidth ) {
+		std::cout << "How many colums should be removed? Valid values: 0 to " << oldWidth << ", inclusive" << std::endl;
+		scanf_s( "%i", &colsToRemove );
+
+		if ( colsToRemove < 1 || colsToRemove > oldWidth ) {
+			std::cout << "Sorry, that doesn't seem to be right." << std::endl;
+		}
+		while ( getchar() != '\n' ); // This loop removes remaining input from stdin.
+	}
+
+	return colsToRemove;
 }
